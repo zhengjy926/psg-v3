@@ -524,4 +524,65 @@ Step 4 is the one that must not be skipped: it is the only way to separate **t_o
 8. v3 design resolutions: `.tmp/res-12.md` (duration table + 0x44/0x45 contract, interfaces `:59-80`, storage `:88-106`, freeze semantics `:108-113`); `.tmp/res-13.md` (constant `K` `:13-17`, "no zero term" `:27`, integer compare `:44`); `.tmp/psg-v3-spec.md:140-144` (service interfaces), `:171-177` (calibration).
 9. v3 glossary: `GLOSSARY.md:81-86` (极性间间隔, 脉冲间隔), `:93-94` (脉冲串间隔), `:45-47` (标定).
 
+## 12. 给硬件/系统的硬件理解与待确认清单（2026-11-08 记录）
+
+> 本节是上面分析的人话版，供非固件读者（硬件/系统）快速理解「这块硬件到底是什么」，以及还有哪些事实没确认。数字与出处见 §1–§11。
+
+### 12.1 信号链：已确认 vs 推测 vs 未知
+
+```
+已确认（原理图 + 一手数据手册）：
+  STM32 HRTIM (PLUSE_N/P) ──22Ω──► NCP81074ADR2G (U10/U11) ──56Ω──► 10× HFBR-1412TZ 串联 LED (≈55 mA)
+                                                                          │ 10 根光纤
+                                                                          ▼
+推测（不在仓库内，待 BOM/HV 侧原理图确认）：
+  [HV 侧] HFBR-24x2Z 接收器 (×10) ──► HV 侧门极驱动 ──► 10× IKQ75N120CH3 串联（主回路分压）
+```
+
+- **10 个 LED 串联只是一条 ≈55 mA 电流回路**，同时点亮 → **10 路并联触发**，不是信号串 10 级。
+- 每路光纤 → 每路接收器 → 每路门驱 → 1 颗 IGBT；10 颗 IGBT 在主回路**串联分压**（每颗约 400 V，IGBT 额定 1200 V）。
+- **不是光耦**：`HFBR-1412TZ` 是裸 LED 发射器（Broadcom 820 nm 光纤发射端），无内部驱动、无输出端；图上 `HFBFR-1412TZ` 是笔误。
+- 延迟只算 **1 趟**（门驱 + 1× 光链路 + 1× IGBT），不是 10 趟。
+
+### 12.2 延迟预算（HRTIM 引脚 → 电流 90 %）
+
+| 环节 | typ | 依据 |
+|---|---:|---|
+| NCP81074ADR2G | 15 ns | onsemi DS p.4–5 |
+| LED/光纤 | ~20 ns | LED tr/tf + 光纤 ~5 ns/m |
+| 接收器（假定 HFBR-24x2Z） | ~65 ns | Broadcom DS p.20 |
+| HV 侧门驱（假定同类） | ~20 ns | **推测** |
+| IKQ75N120CH3 td(on)+tr | 81 ns | Infineon DS p.4 |
+| **合计** | **≈ 200 ns** | 150–300 ns 可信带；**预算按 300 ns** |
+
+### 12.3 校准三块（固件侧）
+
+| 块 | 修什么 | 落点 | 主机可写 |
+|---|---|---|---|
+| 宽度 | 脉冲宽度畸变 | 时长表 A/B（#12 原样） | 是（0x44/0x45） |
+| 延迟 | 只用于采样点 | 编译期 `calib_timing_cfg.h` | 否 |
+| 零偏置 | 零电流 ADC 偏移 | RAM，上电自动采 | 否 |
+
+### 12.4 待确认清单（给硬件）
+
+| # | 问题 | 影响 |
+|---|---|---|
+| H1 | HV 侧接收器型号？（自然配对 HFBR-24x2Z） | 延迟 ±20 ns |
+| H2 | HV 侧门极驱动是什么？ | 延迟 ±15 ns |
+| H3 | 电流传感器类型/带宽？（霍尔 / 分流 + Rogowski） | 可能主导全部 |
+| H4 | LED 串电流实测值？10×VF(max)=20.9 V > 20 V 轨，余量不足，电流随 VF 分档漂 | 延迟随温度/器件漂 |
+| H5 | 200 ns 输出下限是否可达？（Δ≈215 ns，需「负栅宽」；v2 实测最小 245 ns） | F-020 下限 vs T-001 |
+
+### 12.5 固件侧待定（等硬件确认后）
+
+1. F-020 的 200 ns 下限：抬高到 ~250 ns，还是 200 ns 处豁免 T-001。
+2. 是否按三块方案改 spec（新增「采样点偏移」需求，SRS 校准/采样处补）。
+3. v2 校准表数值**不继承**，v3 台架在负载端重测。
+
+### 12.6 一句话
+
+延迟是 **~200 ns 量级**（不是 µs），对 200 ns 最小脉冲是同量级，所以采样点要精心摆。硬件的关键未知集中在 **HV 侧接收器/门驱/电流传感器** 与 **LED 偏置余量**。固件方案（三块）已清楚，落 spec 前需要 H1–H5 与 F-020 下限的系统决策。
+
+---
+
 *Report written 2026-11-08 (Asia/Shanghai). Numbers marked **est** are engineering estimates, not data sheet values; everything else is traceable to the references above.*
