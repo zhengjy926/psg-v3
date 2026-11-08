@@ -14,7 +14,7 @@ Single-context: one root `GLOSSARY.md` and `docs/adr/`. See `docs/agents/domain.
 
 ### Research reports
 
-Research reports live on `research/<topic>` branches, not `main`: `git branch -a`, then `git show <branch>:docs/research/<file>`.
+Research reports are committed to `main` under `docs/research/`.
 
 ### Coding standards
 
