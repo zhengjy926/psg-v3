@@ -439,6 +439,51 @@
               <FileType>1</FileType>
               <FilePath>..\drivers\gpio\gpio_stm32.c</FilePath>
             </File>
+            <File>
+              <FileName>dac_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\dac\dac_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>comparator_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\comparator\comparator_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>hrtim_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\hrtim\hrtim_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\dma\dma_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\adc\adc_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\uart\uart_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>counter_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\counter\counter_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\flash\flash_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>watchdog_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\watchdog\watchdog_stm32.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -454,6 +499,11 @@
         <Group>
           <GroupName>service</GroupName>
           <Files>
+            <File>
+              <FileName>fault.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\service\fault\fault.c</FilePath>
+            </File>
             <File>
               <FileName>heartbeat.c</FileName>
               <FileType>1</FileType>

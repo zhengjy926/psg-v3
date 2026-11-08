@@ -25,6 +25,7 @@ set(ZEPHYR_SRC
 
 set(APP_UNDER_TEST
     osal/osal.c
+    service/fault/fault.c
     service/heartbeat/heartbeat.c
     app/app.c
 )
@@ -37,6 +38,9 @@ set(TEST_SRC
     tests/host/test_init_order.c
     tests/host/test_device.c
     tests/host/test_heartbeat.c
+    tests/host/test_do_device_init.c
+    tests/host/test_device_traversal.c
+    tests/host/test_fault.c
     vendored/unity/src/unity.c
 )
 

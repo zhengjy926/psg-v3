@@ -27,13 +27,14 @@ static void tick_ms(int ms)
 void test_heartbeat(void)
 {
 	const struct device *gpio = device_get_binding("gpio");
-	struct app_config cfg;
+	struct app_config cfg = {0};
 
 	TEST_ASSERT_NOT_NULL(gpio);
 
 	cfg.heartbeat.gpio = gpio;
 	cfg.heartbeat.led_pin = LED_PIN;
 	cfg.heartbeat.half_period_ms = 500U;
+	cfg.watchdog = NULL;
 
 	app_init(&cfg);
 

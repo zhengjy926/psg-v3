@@ -15,4 +15,12 @@
 /* Run indicator (PB5), high while running (F-014). */
 #define BOARD_RUN_PIN 5U
 
+/*
+ * Protocol UART (compile-time selection, #15): 1 = USART1 (single-board debug),
+ * 2 = USART2 (release). Only the selected port builds its protocol stack.
+ */
+#ifndef PSG_PROTO_UART
+#define PSG_PROTO_UART 2
+#endif
+
 #endif /* PSG_BOARD_BOARD_H_ */

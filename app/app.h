@@ -11,10 +11,14 @@
 
 #include <stdint.h>
 
+#include <zephyr/device.h>
+
 #include "service/heartbeat/heartbeat.h"
 
 struct app_config {
 	struct heartbeat_config heartbeat;
+	/** Watchdog device (nullable); fed at the end of each main-loop step. */
+	const struct device *watchdog;
 };
 
 /** Build the running application from an already-bound configuration. */

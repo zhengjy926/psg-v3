@@ -18,12 +18,12 @@ LOG_MODULE_REGISTER(gpio_stm32, LOG_LEVEL_INF);
 
 struct gpio_stm32_config {
 	GPIO_Type *port;
-	uint32_t clock_gate;
+	uint32_t clock_subsys;
 };
 
 static const struct gpio_stm32_config gpio_stm32_cfg = {
 	.port = GPIOB,
-	.clock_gate = (1UL << RCC_AHB2ENR_GPIOBEN_Pos),
+	.clock_subsys = PSG_CLOCK_GPIOB,
 };
 
 static int gpio_stm32_configure(const struct device *dev, uint32_t pin,
@@ -83,7 +83,7 @@ static int gpio_stm32_init(const struct device *dev)
 	if (clock == NULL) {
 		return -1;
 	}
-	(void)clock_control_on(clock, cfg->clock_gate);
+	(void)clock_control_on(clock, cfg->clock_subsys);
 	LOG_INF("gpio ready");
 	return 0;
 }
