@@ -56,3 +56,12 @@ dkms.conf
 
 # Local scratch (wayfinder working files, ecsp reference clone)
 .tmp/
+
+# Build output
+build/
+*.obj
+*.axf
+*.bin
+*.dump
+*.ctu-info
+*.d

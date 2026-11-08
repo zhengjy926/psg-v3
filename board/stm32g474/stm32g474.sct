@@ -1,0 +1,63 @@
+; SPDX-License-Identifier: BSD-3-Clause
+;
+; STM32G474 scatter file (armlink, armclang AC6).
+;
+; This is the init-section ordering contract (see research ticket #2):
+;   - Each init level lives in its own execution region, so level order equals
+;     region order (ER_INIT_EARLY -> ... -> ER_INIT_APPLICATION).
+;   - Within a region, armclang places `.z_init_<LEVEL>_P_<prio>_SUB_<sub>_`
+;     sections in lexicographic section-name order. The prio/sub fields are
+;     zero-padded to 3 digits (see vendored/zephyr sys/init_prio_str.h), so
+;     lexicographic order equals numeric priority order.
+;   - `z_sys_init_run_level()` in vendored/zephyr/src/init.c walks each level
+;     using the region's Image$$ER_INIT_<LEVEL>$$Base / $$Limit symbols.
+;
+; Flash: 512 KB (0x08000000..0x08080000). RAM: 128 KB (0x20000000..0x20020000).
+
+LR_IROM1 0x08000000 0x00080000 {
+  ER_VECTORS 0x08000000 0x00000400 {
+    *.o (.isr_vector, +First)
+  }
+
+  ER_INIT_EARLY +0 {
+    *.o (.z_init_EARLY_P_*)
+  }
+
+  ER_INIT_PRE_KERNEL_1 +0 {
+    *.o (.z_init_PRE_KERNEL_1_P_*)
+  }
+
+  ER_INIT_PRE_KERNEL_2 +0 {
+    *.o (.z_init_PRE_KERNEL_2_P_*)
+  }
+
+  ER_INIT_POST_KERNEL +0 {
+    *.o (.z_init_POST_KERNEL_P_*)
+  }
+
+  ER_INIT_APPLICATION +0 {
+    *.o (.z_init_APPLICATION_P_*)
+  }
+
+  ER_DEVICE +0 {
+    *.o (._device.static.*)
+  }
+
+  ER_LOG_CONST +0 {
+    *.o (._log_const.static.*)
+  }
+
+  ER_LOG_BACKEND +0 {
+    *.o (._log_backend.static.*)
+  }
+
+  ER_RO +0 {
+    *(InRoot$$Sections)
+    .ANY (+RO)
+    .ANY (+XO)
+  }
+
+  RW_IRAM1 0x20000000 0x00020000 {
+    .ANY (+RW +ZI)
+  }
+}

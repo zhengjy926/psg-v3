@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  host-build-test:
+    name: Host build + tests (GCC + Unity + ASan/UBSan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc cmake ninja-build cppcheck clang-tidy
+
+      - name: Configure
+        run: cmake -S . -B build/host -G Ninja -DCMAKE_BUILD_TYPE=Debug
+
+      # Build runs the no-STM32-header hard-constraint check (check_no_stm32).
+      - name: Build
+        run: cmake --build build/host
+
+      - name: Test
+        run: ctest --test-dir build/host --output-on-failure
+
+      - name: Static analysis (clang-tidy + cppcheck + MISRA)
+        run: tools/static_analysis.sh build/host /usr/share/cppcheck/addons

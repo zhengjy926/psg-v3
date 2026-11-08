@@ -1,0 +1,27 @@
+# clang-tidy configuration for the host-clean firmware layers.
+# Focused on the clang static analyzer + CERT C (safety) + bugprone checks,
+# which apply to C11 and align with the MISRA-C:2012 intent checked by cppcheck.
+#
+# Note: Zephyr's device/init/log internals deliberately use reserved (double-
+# underscore) identifiers for linker symbols and section names, so the
+# reserved-identifier checks are disabled.
+
+Checks: >
+  clang-analyzer-*,
+  bugprone-*,
+  cert-*,
+  performance-*,
+  -bugprone-easily-swappable-parameters,
+  -cert-err33-c,
+  -bugprone-reserved-identifier,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -clang-analyzer-security.insecureAPI.strcpy
+
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+
+CheckOptions:
+  - key: readability-simplify-boolean-expr.ChainedConditionalAssignment
+    value: 0
