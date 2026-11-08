@@ -14,6 +14,7 @@
 	.syntax unified
 	.cpu cortex-m4
 	.thumb
+	.eabi_attribute 25, 1
 
 	.global g_pfnVectors
 	.global Default_Handler
@@ -49,6 +50,14 @@ g_pfnVectors:
 	.type Reset_Handler, %function
 Reset_Handler:
 	ldr sp, =Image$$RW_IRAM1$$Limit
+
+	/* Enable FPU (Cortex-M4F): CPACR[20:23] = 0xF, required for hard-float ABI. */
+	ldr r0, =0xE000ED88
+	ldr r1, [r0]
+	orr r1, r1, #(0xF << 20)
+	str r1, [r0]
+	dsb
+	isb
 
 	/* Zero .bss. */
 	ldr r0, =Image$$RW_IRAM1$$ZI$$Base

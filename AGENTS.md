@@ -19,3 +19,7 @@ Research reports live on `research/<topic>` branches, not `main`: `git branch -a
 ### Coding standards
 
 Judgement-call rules live in `CODING_STANDARDS.md` (read during review). Mechanical checks run in CI.
+
+### Target builds
+
+目标固件改动必须同时通过两套构建：`tools/build_target.ps1`（脚本 / CI）与 Keil uVision 工程 `mdk-arm/PFA_PSG.uvprojx`（`UV4 -r`，要求 0 Error）。见 `docs/build.md`。

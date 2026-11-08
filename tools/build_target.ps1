@@ -18,7 +18,8 @@ $out = Join-Path $root 'build\target'
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 
 $cflags = @(
-    '--target=arm-arm-none-eabi', '-mcpu=cortex-m4', '-std=c11', '-Wall', '-Wextra',
+    '--target=arm-arm-none-eabi', '-mcpu=cortex-m4', '-mfloat-abi=hard', '-mfpu=fpv4-sp-d16',
+    '-std=c11', '-Wall', '-Wextra',
     '-I', (Join-Path $root 'vendored\zephyr\include'),
     '-I', $root
 )
