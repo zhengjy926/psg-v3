@@ -7,6 +7,12 @@
 | 目标固件 | armclang AC6 (Keil MDK) + armlink + scatter | `build/target/psg.axf` / `psg.bin` | 编译通过 + init 段按 level+prio 排序 |
 | 主机测试 | Linux + GCC + Unity + ASan/UBSan | `build/host/host_tests` | 单测通过 + service/app/osal 不含 STM32 头（构建期强制） |
 
+## 环境要求
+
+- **目标固件**：Windows + Keil MDK（armclang AC6 / armlink），ARMCC5 不支持（ADR-0002）。
+- **主机测试**：Linux（GCC + libasan/libubsan）。Windows 机器上经 **WSL** 跑，CI 用 `ubuntu-latest`。
+- **原生 Windows 不支持主机测试**：mingw64 缺 libasan/libubsan，且其 PE 链接器不认 `tests/host/init_sections.ld` 的 `INSERT AFTER .rodata`（ELF 特性），即使 `-DENABLE_SANITIZERS=OFF` 也链接出坏 exe。需要原生 Windows 主机测试时，把主机端边界符号换成构建期生成的排序表（研究票 #2 的「路径 B」）。
+
 ## 目录
 
 ```
@@ -44,7 +50,7 @@ ctest --test-dir build/host --output-on-failure
 
 `check_no_stm32` 在每次构建时扫描 `osal/ service/ app/ drivers/api/`，含 STM32 头
 即构建失败（硬约束）。ASan/UBSan 默认开启，`-DENABLE_SANITIZERS=OFF` 可关
-（部分 Windows GCC 无 libasan）。
+（见上方「环境要求」：主机测试须在 Linux/WSL 下构建）。
 
 ## 静态检查（clang-tidy + cppcheck + MISRA）
 
