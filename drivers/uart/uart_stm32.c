@@ -12,6 +12,7 @@
 #include "drivers/api/clock_control.h"
 
 #include <zephyr/device.h>
+#include <zephyr/errno.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
 
@@ -29,7 +30,7 @@ static int uart_stm32_init(const struct device *dev)
 	__ASSERT(clock != NULL, "clock_control device not ready");
 	__ASSERT(gpio != NULL, "gpio device not ready");
 	if ((clock == NULL) || (gpio == NULL)) {
-		return -1;
+		return -ENODEV;
 	}
 
 #if PSG_PROTO_UART == 1

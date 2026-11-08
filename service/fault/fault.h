@@ -2,7 +2,9 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * fault — the device fault word (GLOSSARY: 故障字). Host-clean leaf module:
- * not one of the six business services; app and services may set/clear/read it.
+ * not one of the six business services. app, services, and the board-layer
+ * composition root (which owns the "all devices ready" final check) may
+ * set/clear/read it.
  * bit0 = board not ready (a required device failed init, #5 §4); bit1 is
  * reserved for the over-current latch (a later ticket).
  */

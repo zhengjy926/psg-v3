@@ -11,6 +11,7 @@
 
 #include "board/stm32g474/stm32g474.h"
 #include <zephyr/device.h>
+#include <zephyr/errno.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
 
@@ -32,7 +33,7 @@ static int gpio_stm32_configure(const struct device *dev, uint32_t pin,
 	const struct gpio_stm32_config *cfg = dev->config;
 
 	if (pin > 15U) {
-		return -1;
+		return -EINVAL;
 	}
 	if (mode == GPIO_OUTPUT) {
 		cfg->port->MODER &= ~(3UL << (pin * 2U));
@@ -48,7 +49,7 @@ static int gpio_stm32_set(const struct device *dev, uint32_t pin, uint32_t value
 	const struct gpio_stm32_config *cfg = dev->config;
 
 	if (pin > 15U) {
-		return -1;
+		return -EINVAL;
 	}
 	if (value != 0U) {
 		cfg->port->BSRR = (1UL << pin);
@@ -81,7 +82,7 @@ static int gpio_stm32_init(const struct device *dev)
 
 	__ASSERT(clock != NULL, "clock_control device not ready");
 	if (clock == NULL) {
-		return -1;
+		return -ENODEV;
 	}
 	(void)clock_control_on(clock, cfg->clock_subsys);
 	LOG_INF("gpio ready");

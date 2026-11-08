@@ -10,6 +10,7 @@
 #include "drivers/api/clock_control.h"
 
 #include <zephyr/device.h>
+#include <zephyr/errno.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
 
@@ -29,7 +30,7 @@ static int adc_stm32_init(const struct device *dev)
 	__ASSERT(gpio != NULL, "gpio device not ready");
 	__ASSERT(dma != NULL, "dma device not ready");
 	if ((clock == NULL) || (gpio == NULL) || (dma == NULL)) {
-		return -1;
+		return -ENODEV;
 	}
 	(void)clock_control_on(clock, PSG_CLOCK_ADC12);
 	LOG_INF("adc ready");

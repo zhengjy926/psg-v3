@@ -11,6 +11,7 @@
 
 #include "board/stm32g474/stm32g474.h"
 #include <zephyr/device.h>
+#include <zephyr/errno.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(watchdog_stm32, LOG_LEVEL_INF);
@@ -21,7 +22,7 @@ static int watchdog_wait_ready(volatile uint32_t *reg, uint32_t mask)
 
 	while ((*reg & mask) == 0U) {
 		if (timeout == 0U) {
-			return -1;
+			return -ETIMEDOUT;
 		}
 		timeout--;
 	}
@@ -35,7 +36,7 @@ static int iwdg_wait_update(uint32_t mask)
 
 	while ((IWDG->SR & mask) != 0U) {
 		if (timeout == 0U) {
-			return -1;
+			return -ETIMEDOUT;
 		}
 		timeout--;
 	}
@@ -60,7 +61,7 @@ static int watchdog_stm32_init(const struct device *dev)
 	RCC->CSR |= RCC_CSR_LSION_Msk;
 	if (watchdog_wait_ready(&RCC->CSR, RCC_CSR_LSIRDY_Msk) != 0) {
 		LOG_ERR("LSI not ready");
-		return -1;
+		return -ETIMEDOUT;
 	}
 
 	/* Unlock, prescale /256 -> 125 Hz, reload 125 -> ~1 s, then start. */
@@ -68,12 +69,12 @@ static int watchdog_stm32_init(const struct device *dev)
 	IWDG->PR = IWDG_PR_DIV256;
 	if (iwdg_wait_update(IWDG_SR_PVU_Msk) != 0) {
 		LOG_ERR("IWDG prescaler update failed");
-		return -1;
+		return -ETIMEDOUT;
 	}
 	IWDG->RLR = IWDG_RELOAD_1S;
 	if (iwdg_wait_update(IWDG_SR_RVU_Msk) != 0) {
 		LOG_ERR("IWDG reload update failed");
-		return -1;
+		return -ETIMEDOUT;
 	}
 	IWDG->KR = IWDG_KR_KEY_START;
 	IWDG->KR = IWDG_KR_KEY_RELOAD;

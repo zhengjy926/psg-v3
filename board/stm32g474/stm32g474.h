@@ -137,11 +137,13 @@ typedef struct {
 #define PWR_CR1_VOS_Msk (0x3UL << PWR_CR1_VOS_Pos)
 #define PWR_CR1_VOS_RANGE1 (1UL << PWR_CR1_VOS_Pos) /* 0b01 = Range 1 (1.2 V) */
 
-/* PWR_SR2 bits */
+/* PWR_SR2 bits. VOSF is set while voltage scaling is in progress and cleared
+ * by hardware once the regulator reaches the VOS target voltage. */
 #define PWR_SR2_VOSF_Pos 10U
 #define PWR_SR2_VOSF_Msk (1UL << PWR_SR2_VOSF_Pos)
 
-/* PWR_CR5 bits */
+/* PWR_CR5 bits. R1MODE = 0 enables Range 1 boost (up to 170 MHz); = 1 keeps
+ * Range 1 normal mode (up to 150 MHz). */
 #define PWR_CR5_R1MODE_Pos 8U
 #define PWR_CR5_R1MODE_Msk (1UL << PWR_CR5_R1MODE_Pos)
 

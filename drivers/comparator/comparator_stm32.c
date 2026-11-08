@@ -9,6 +9,7 @@
  */
 
 #include <zephyr/device.h>
+#include <zephyr/errno.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
 
@@ -22,7 +23,7 @@ static int comparator_stm32_init(const struct device *dev)
 	dac = device_get_binding("dac");
 	__ASSERT(dac != NULL, "dac device not ready");
 	if (dac == NULL) {
-		return -1;
+		return -ENODEV;
 	}
 	LOG_INF("comparator ready");
 	return 0;

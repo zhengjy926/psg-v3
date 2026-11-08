@@ -12,6 +12,7 @@
 
 #include "board/stm32g474/stm32g474.h"
 #include <zephyr/device.h>
+#include <zephyr/errno.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(clock_stm32, LOG_LEVEL_INF);
@@ -79,11 +80,11 @@ static int clock_stm32_on(const struct device *dev, uint32_t subsys)
 
 	ARG_UNUSED(dev);
 	if (subsys >= PSG_CLOCK_COUNT) {
-		return -1;
+		return -EINVAL;
 	}
 	reg = clock_bus_reg(clock_gates[subsys].bus);
 	if (reg == NULL) {
-		return -1;
+		return -EINVAL;
 	}
 	*reg |= (1UL << clock_gates[subsys].bit);
 	return 0;
@@ -111,7 +112,21 @@ static int clock_wait_ready(volatile uint32_t *reg, uint32_t mask)
 
 	while ((*reg & mask) != mask) {
 		if (timeout == 0U) {
-			return -1;
+			return -ETIMEDOUT;
+		}
+		timeout--;
+	}
+	return 0;
+}
+
+/* Poll until every bit in mask is cleared, or a countdown timeout expires. */
+static int clock_wait_clear(volatile uint32_t *reg, uint32_t mask)
+{
+	volatile uint32_t timeout = 100000U;
+
+	while ((*reg & mask) != 0U) {
+		if (timeout == 0U) {
+			return -ETIMEDOUT;
 		}
 		timeout--;
 	}
@@ -126,49 +141,45 @@ static int clock_wait_ready(volatile uint32_t *reg, uint32_t mask)
  */
 static int clock_stm32_configure(void)
 {
-	/* 1. PWR clock + voltage scaling Range 1 (1.2 V). */
+	/* 1. PWR clock, then Range 1 boost (R1MODE=0) + VOS=Range 1. VOSF is set
+	 * while the regulator scales and cleared when it reaches the target. */
 	RCC->APB1ENR1 |= RCC_APB1ENR1_PWREN_Msk;
+	PWR->CR5 &= ~PWR_CR5_R1MODE_Msk;
 	PWR->CR1 = (PWR->CR1 & ~PWR_CR1_VOS_Msk) | PWR_CR1_VOS_RANGE1;
-	if (clock_wait_ready(&PWR->SR2, PWR_SR2_VOSF_Msk) != 0) {
-		return -1;
+	if (clock_wait_clear(&PWR->SR2, PWR_SR2_VOSF_Msk) != 0) {
+		return -ETIMEDOUT;
 	}
 
-	/* 2. Regulator boost (Range 1 boost mode) for > 150 MHz. */
-	PWR->CR5 |= PWR_CR5_R1MODE_Msk;
-	if (clock_wait_ready(&PWR->SR2, PWR_SR2_VOSF_Msk) != 0) {
-		return -1;
-	}
-
-	/* 3. Flash: 4 wait states + prefetch + instruction/data caches. */
+	/* 2. Flash: 4 wait states + prefetch + instruction/data caches. */
 	FLASH->ACR = (FLASH->ACR & ~FLASH_ACR_LATENCY_Msk) |
 		     (FLASH_LATENCY_170MHZ << FLASH_ACR_LATENCY_Pos) |
 		     FLASH_ACR_PRFTEN_Msk | FLASH_ACR_ICEN_Msk | FLASH_ACR_DCEN_Msk;
 
-	/* 4. HSE on (crystal, not bypass). */
+	/* 3. HSE on (crystal, not bypass). */
 	RCC->CR |= RCC_CR_HSEON_Msk;
 	if (clock_wait_ready(&RCC->CR, RCC_CR_HSERDY_Msk) != 0) {
-		return -1;
+		return -ETIMEDOUT;
 	}
 
-	/* 5. PLL = HSE / 2 * 85, R = /2 -> 170 MHz. */
+	/* 4. PLL = HSE / 2 * 85, R = /2 -> 170 MHz. */
 	RCC->PLLCFGR = RCC_PLLCFGR_PLLSRC_HSE |
 		       ((uint32_t)PLLM_DIV2_FIELD << RCC_PLLCFGR_PLLM_Pos) |
 		       ((uint32_t)PLLN_VAL << RCC_PLLCFGR_PLLN_Pos) |
 		       RCC_PLLCFGR_PLLREN_Msk;
 	RCC->CR |= RCC_CR_PLLON_Msk;
 	if (clock_wait_ready(&RCC->CR, RCC_CR_PLLRDY_Msk) != 0) {
-		return -1;
+		return -ETIMEDOUT;
 	}
 
-	/* 6. AHB/APB prescalers = /1 (G4 APB1/APB2 max is 170 MHz). TIMPRE has
+	/* 5. AHB/APB prescalers = /1 (G4 APB1/APB2 max is 170 MHz). TIMPRE has
 	 * no G4 equivalent: with no APB divider the timer clock = APB = 170 MHz. */
 	RCC->CFGR &= ~(RCC_CFGR_HPRE_Msk | RCC_CFGR_PPRE1_Msk |
 		       RCC_CFGR_PPRE2_Msk);
 
-	/* 7. Switch SYSCLK to PLL and wait for the switch. */
+	/* 6. Switch SYSCLK to PLL and wait for the switch. */
 	RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_SW_Msk) | RCC_CFGR_SW_PLL;
 	if (clock_wait_ready(&RCC->CFGR, RCC_CFGR_SWS_PLL) != 0) {
-		return -1;
+		return -ETIMEDOUT;
 	}
 
 	SystemCoreClock = SYSCLK_FREQ_HZ;
@@ -180,7 +191,7 @@ static int clock_stm32_init(const struct device *dev)
 	ARG_UNUSED(dev);
 	if (clock_stm32_configure() != 0) {
 		LOG_ERR("clock tree failed");
-		return -1;
+		return -ETIMEDOUT;
 	}
 	LOG_INF("clock ready: %u Hz", (unsigned int)SystemCoreClock);
 	return 0;

@@ -9,6 +9,7 @@
 #include "drivers/api/clock_control.h"
 
 #include <zephyr/device.h>
+#include <zephyr/errno.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
 
@@ -22,7 +23,7 @@ static int counter_stm32_init(const struct device *dev)
 	clock = device_get_binding("clock_control");
 	__ASSERT(clock != NULL, "clock_control device not ready");
 	if (clock == NULL) {
-		return -1;
+		return -ENODEV;
 	}
 	(void)clock_control_on(clock, PSG_CLOCK_TIM2);
 	LOG_INF("counter ready");
