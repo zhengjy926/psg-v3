@@ -28,19 +28,19 @@
 
 | Pin Name | Signal on Pin | GPIO output level | GPIO mode | GPIO Pull-up/Pull-down | Maximum output speed | Function |
 | --- | --- | --- | --- | --- | --- | --- |
-| PB4 | n/a | n/a | External Interrupt Mode with Rising/Falling edge trigger detection | Pull-down | n/a | 硬件启停源 |
-| PB5 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 硬件运行指示 |
+| PB4 | n/a | n/a | External Interrupt Mode with Rising/Falling edge trigger detection | Pull-down | n/a | 端口启停输入 |
+| PB5 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 运行指示 |
 | PB6 | n/a | n/a | External Interrupt Mode with Rising edge trigger detection | Pull-down | n/a | R 波输入检测 |
 | PB9 | n/a | High | Output Push Pull | No pull-up and no pull-down | Low | 板载 LED |
-| PD8 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 A MOSFET |
-| PD9 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 B MOSFET |
-| PD10 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 C MOSFET |
-| PD11 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 D MOSFET |
-| PD12 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 E MOSFET |
-| PD13 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 F MOSFET |
-| PG7 | n/a | n/a | External Interrupt Mode with Rising edge trigger detection | Pull-down | n/a | 正通道锁存过流检测 |
-| PG8 | n/a | n/a | External Interrupt Mode with Rising edge trigger detection | Pull-down | n/a | 负通道锁存过流检测 |
-| PG9 | n/a | n/a | Output Push Pull | No pull-up and no pull-down | Low | 锁存过流复位 |
+| PD8 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 F MOSFET |
+| PD9 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 E MOSFET |
+| PD10 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 D MOSFET |
+| PD11 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 C MOSFET |
+| PD12 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 B MOSFET |
+| PD13 | n/a | Low | Output Push Pull | No pull-up and no pull-down | Low | 杆 A MOSFET |
+| PG7 | n/a | n/a | External Interrupt Mode with Rising edge trigger detection | Pull-down | n/a | 正通道过流锁存 |
+| PG8 | n/a | n/a | External Interrupt Mode with Rising edge trigger detection | Pull-down | n/a | 负通道过流锁存 |
+| PG9 | n/a | n/a | Output Push Pull | No pull-up and no pull-down | Low | 过流锁存复位 |
 | PA0 | COMP3_INP; ADC1_IN1 | n/a | Analog | No pull-up and no pull-down | n/a | 正通道电流采样 |
 | PA1 | COMP1_INP; ADC2_IN2 | n/a | Analog | No pull-up and no pull-down | n/a | 负通道电流采样 |
 | PA8 | HRTIM1_CHA1 | n/a | Alternate Function Push Pull | No pull-up and no pull-down | Very High | 正通道脉冲输出 |
