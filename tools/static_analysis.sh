@@ -25,7 +25,7 @@ clang-tidy -p "$BUILD_DIR" "${SOURCES[@]}" --quiet \
   --warnings-as-errors='clang-analyzer-*'
 
 echo "== cppcheck (built-in) =="
-cppcheck --std=c11 --enable=warning,error --error-exitcode=1 \
+cppcheck --std=c11 --enable=warning --error-exitcode=1 \
   --suppress=missingIncludeSystem --suppress=comparePointers \
   "${INCLUDES[@]}" "${SOURCES[@]}"
 
