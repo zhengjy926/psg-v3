@@ -41,13 +41,13 @@ powershell -File tools\build_target.ps1
 armlink 按段名字典序放置 → 字典序=数值序。已实证（研究票 #2 的「未确证」项）。
 
 **Keil uVision 工程（并行构建，必须同时通过）**：目标固件改动除脚本构建外，还必须在
-`mdk-arm/PFA_PSG.uvprojx` 中用命令构建并通过：
+`project/MDK-ARM/PFA_PSG.uvprojx` 中用命令构建并通过：
 
 ```powershell
-& 'D:\Keil_v5\UV4\UV4.exe' -r 'mdk-arm\PFA_PSG.uvprojx' -j0 -o 'mdk-arm\Objects\build.log'
+& 'D:\Keil_v5\UV4\UV4.exe' -r 'project\MDK-ARM\PFA_PSG.uvprojx' -j0 -o 'project\MDK-ARM\Objects\build.log'
 ```
 
-要求 `0 Error(s)`（`L6314W` 空 init level 属预期）；产物落 `mdk-arm/Objects/`。
+要求 `0 Error(s)`（`L6314W` 空 init level 属预期）；产物落 `project/MDK-ARM/Objects/`。
 `.uvoptx` / `JLinkSettings.ini` 是本机文件、不入库；缺失时 uVision 用 `.uvprojx` 的配置构建。
 
 ## 主机测试（Linux + GCC + Unity + ASan/UBSan）
@@ -75,6 +75,6 @@ tools/static_analysis.sh build/host /usr/share/cppcheck/addons
 
 ## 关键验收对照
 
-- AC#1 目标固件**双构建**：`build_target.ps1`（脚本 / CI）**且** Keil uVision 工程 `mdk-arm/PFA_PSG.uvprojx` 的 `UV4 -r` 均 `0 Error(s)`；scatter 排序由 `verify_init_order.py` 校验。
+- AC#1 目标固件**双构建**：`build_target.ps1`（脚本 / CI）**且** Keil uVision 工程 `project/MDK-ARM/PFA_PSG.uvprojx` 的 `UV4 -r` 均 `0 Error(s)`；scatter 排序由 `verify_init_order.py` 校验。
 - AC#2 主机工程编译 + 无 STM32 头 → CMake 主机构建 + `check_no_stm32`。
 - AC#3 clang-tidy + cppcheck(MISRA) → `static_analysis.sh` + `.github/workflows/ci.yml`。

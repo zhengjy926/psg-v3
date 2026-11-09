@@ -66,11 +66,18 @@ build/
 *.ctu-info
 *.d
 
-# Keil / uVision: only .uvprojx is tracked; the rest is per-user/generated
-mdk-arm/Objects/
-mdk-arm/DebugConfig/
-mdk-arm/RTE/
+# Keil / uVision: only .uvprojx is tracked; the rest is per-user/generated.
+# Patterns containing a slash are anchored at the repo root, so the project
+# directory (project/MDK-ARM) must be spelled out in full.
+/project/MDK-ARM/Objects/
+/project/MDK-ARM/DebugConfig/
+/project/MDK-ARM/RTE/
+/project/MDK-ARM/Listings/
+/project/MDK-ARM/JLinkSettings.ini
 *.uvguix.*
 *.uvoptx
-mdk-arm/JLinkSettings.ini
 JLinkLog.txt
+
+# Python tooling caches (tools/*.py)
+__pycache__/
+*.pyc
