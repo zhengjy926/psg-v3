@@ -24,7 +24,6 @@ $cflags = @(
 )
 
 $includeDirs = @(
-    'vendored\zephyr\include',
     'lib\libc\armstdc\include',
     'lib',
     'lib\utils',

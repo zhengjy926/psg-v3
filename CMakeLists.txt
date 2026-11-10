@@ -11,16 +11,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ENABLE_SANITIZERS "Build the host tests with ASan + UBSan" ON)
 
 # ---------------------------------------------------------------------------
-# Host test executable. Only the host-clean layers (vendored zephyr port,
+# Host test executable. Only the host-clean layers (Zephyr port under lib/,
 # osal, service, app) plus test doubles are compiled here; board/ and the
 # target drivers/ are excluded (they include STM32 headers).
 # ---------------------------------------------------------------------------
 
 set(ZEPHYR_SRC
-    vendored/zephyr/src/init.c
-    vendored/zephyr/src/device.c
-    vendored/zephyr/src/logging.c
-    vendored/zephyr/src/assert.c
+    lib/utils/init_runner.c
+    lib/utils/device.c
 )
 
 set(APP_UNDER_TEST
@@ -41,14 +39,21 @@ set(TEST_SRC
     tests/host/test_do_device_init.c
     tests/host/test_device_traversal.c
     tests/host/test_fault.c
-    vendored/unity/src/unity.c
+    third_party/unity/src/unity.c
 )
 
 add_executable(host_tests ${ZEPHYR_SRC} ${APP_UNDER_TEST} ${TEST_SRC})
 
 target_include_directories(host_tests PRIVATE
-    vendored/zephyr/include
-    vendored/unity/src
+    app
+    lib
+    lib/utils
+    lib/os
+    lib/toolchain
+    lib/libc/armstdc/include
+    subsys
+    drivers/include
+    third_party/unity/src
     tests/host
     ${CMAKE_SOURCE_DIR}
 )
@@ -87,7 +92,7 @@ add_custom_target(check_no_stm32 ALL
             ${CMAKE_SOURCE_DIR}/osal
             ${CMAKE_SOURCE_DIR}/service
             ${CMAKE_SOURCE_DIR}/app
-            ${CMAKE_SOURCE_DIR}/drivers/api
+            ${CMAKE_SOURCE_DIR}/lib/utils
     COMMENT "Checking host-clean layers for STM32/MCU headers"
     VERBATIM
 )
