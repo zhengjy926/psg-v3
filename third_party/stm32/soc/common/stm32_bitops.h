@@ -7,31 +7,33 @@
 #ifndef STM32_BITOPS_H_
 #define STM32_BITOPS_H_
 
-#include <zephyr/arch/cpu.h>
+#include <stdint.h>
+
+#include <toolchain/toolchain.h>
 
 static ALWAYS_INLINE void stm32_reg_write(volatile uint32_t *addr, uint32_t value)
 {
-	sys_write32(value, (mem_addr_t)addr);
+	*addr = value;
 }
 
 static ALWAYS_INLINE uint32_t stm32_reg_read(const volatile uint32_t *addr)
 {
-	return sys_read32((mem_addr_t)addr);
+	return *addr;
 }
 
 static ALWAYS_INLINE void stm32_reg_set_bits(volatile uint32_t *addr, uint32_t mask)
 {
-	sys_set_bits((mem_addr_t)addr, mask);
+	*addr |= mask;
 }
 
 static ALWAYS_INLINE void stm32_reg_clear_bits(volatile uint32_t *addr, uint32_t mask)
 {
-	sys_clear_bits((mem_addr_t)addr, mask);
+	*addr &= ~mask;
 }
 
 static ALWAYS_INLINE uint32_t stm32_reg_read_bits(const volatile uint32_t *addr, uint32_t mask)
 {
-	return sys_read32((mem_addr_t)addr) & mask;
+	return *addr & mask;
 }
 
 static ALWAYS_INLINE void stm32_reg_modify_bits(volatile uint32_t *addr, uint32_t mask,

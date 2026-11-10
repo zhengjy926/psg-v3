@@ -6,10 +6,8 @@
 #ifndef ZEPHYR_SOC_ST_STM32_COMMON_STM32_GPIO_SHARED_H_
 #define ZEPHYR_SOC_ST_STM32_COMMON_STM32_GPIO_SHARED_H_
 
-#include <zephyr/drivers/clock_control/stm32_clock_control.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/pinctrl.h>
-#include <zephyr/types.h>
+#include <gpio.h>
+#include <types.h>
 
 /*
  * Name of all GPIO ports that may exist (without the `gpio` prefix).

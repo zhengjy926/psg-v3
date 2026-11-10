@@ -13,12 +13,12 @@
 #ifndef ZEPHYR_INCLUDE_LOGGING_LOG_BACKEND_H_
 #define ZEPHYR_INCLUDE_LOGGING_LOG_BACKEND_H_
 
-#include <zephyr/logging/log_msg.h>
+#include <logging/log_msg.h>
 #include <stdarg.h>
-#include <zephyr/sys/__assert.h>
-#include <zephyr/sys/util.h>
-#include <zephyr/logging/log_output.h>
-#include <zephyr/sys/iterable_sections.h>
+#include <__assert.h>
+#include <util.h>
+#include <logging/log_output.h>
+#include <iterable_sections.h>
 
 #ifdef __cplusplus
 extern "C" {

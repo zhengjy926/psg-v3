@@ -61,12 +61,12 @@ def main():
         key = (level, prio, sub)
         if prev is not None:
             if addr <= prev[0]:
-                print(f"ERROR: address not increasing:\n  {prev[4]}\n  {raw}",
+                print(f"ERROR: address not increasing:\n  {prev[2]}\n  {raw}",
                       file=sys.stderr)
                 return 1
             if key < prev[1]:
                 print(f"ERROR: init order violated (level/prio/sub):\n"
-                      f"  {prev[4]}\n  {raw}", file=sys.stderr)
+                      f"  {prev[2]}\n  {raw}", file=sys.stderr)
                 return 1
         prev = (addr, key, raw)
 

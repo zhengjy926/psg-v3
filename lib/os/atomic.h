@@ -16,12 +16,12 @@
 #define ZEPHYR_INCLUDE_SYS_ATOMIC_H_
 
 #include <stdbool.h>
-#include <zephyr/toolchain.h>
+#include <toolchain/toolchain.h>
 #include <stddef.h>
 
-#include <zephyr/sys/atomic_types.h> /* IWYU pragma: export */
-#include <zephyr/types.h>
-#include <zephyr/sys/util.h>
+#include <atomic_types.h> /* IWYU pragma: export */
+#include <types.h>
+#include <util.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +46,7 @@ extern "C" {
 # endif /* CONFIG_XTENSA */
 #elif defined(CONFIG_ATOMIC_OPERATIONS_BUILTIN)
 /* Default.  See this file for the Doxygen reference: */
-#include <zephyr/sys/atomic_builtin.h>
+#include <atomic_builtin.h>
 #else
 #error "CONFIG_ATOMIC_OPERATIONS_* not defined"
 #endif

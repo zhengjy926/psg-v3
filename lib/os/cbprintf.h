@@ -10,7 +10,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <zephyr/toolchain.h>
+#include <toolchain/toolchain.h>
 #include <string.h>
 
 #ifdef CONFIG_CBPRINTF_LIBC_SUBSTS
@@ -107,7 +107,7 @@ BUILD_ASSERT(sizeof(struct cbprintf_package_hdr_ext) % Z_PKG_HDR_EXT_XTENSA_ALIG
  * @endcond
  */
 
-#include <zephyr/sys/cbprintf_internal.h>
+#include <cbprintf_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -257,7 +257,7 @@ BUILD_ASSERT(Z_IS_POW2(CBPRINTF_PACKAGE_ALIGNMENT));
 
 /**@} */
 
-#include <zephyr/sys/cbprintf_enums.h>
+#include <cbprintf_enums.h>
 
 /** @brief Signature for a cbprintf callback function.
  *

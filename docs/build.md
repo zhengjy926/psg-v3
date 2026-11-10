@@ -16,7 +16,7 @@
 ## 目录
 
 ```
-vendored/zephyr/   移植 Zephyr v4.5.0 设备模型 + init + 日志最小闭包（Apache-2.0）
+vendored/zephyr/   移植 Zephyr v4.5.0 设备模型 + init API + 日志最小闭包（Apache-2.0）
 vendored/unity/    Unity 测试框架（MIT）
 board/             目标板支持（STM32G474：startup/scatter/system/组合根，可含 STM32 头）
 drivers/api/       驱动 ops 接口（主机清洁接缝，禁含 STM32 头）
@@ -32,13 +32,15 @@ tools/             构建脚本、静态检查、init 顺序校验
 powershell -File tools\build_target.ps1
 ```
 
-脚本用 armclang 编译、armlink 按 `board/stm32g474/stm32g474.sct` 链接，并跑
+脚本用 armclang 编译、armlink 按 `board/stm32g474.sct` 链接，并跑
 `tools/verify_init_order.py` 校验 init 段按 (level, prio) 单调排序。默认工具链
 `D:\Keil_v5\ARM\ARMCLANG\bin`，可用 `$env:ARMCLANG_BIN` 覆盖。
 
-**scatter 排序契约**：每个 init level 占一个执行区（`ER_INIT_<LEVEL>`），区内
-`.z_init_<LEVEL>_P_<prio>_SUB_<sub>_` 段名零填充 3 位（`P_001`/`P_010`/…），
-armlink 按段名字典序放置 → 字典序=数值序。已实证（研究票 #2 的「未确证」项）。
+**scatter 排序契约**：init level 按 execution region 顺序执行；当前目标固件
+保留的 POST_KERNEL 优先级为 1、5、10，各自使用独立 region。armlink 不保证按
+init section 名称排序，因此新增或调整优先级时，必须同步更新
+`board/stm32g474.sct` 和 `lib/utils/init_runner.c`；构建脚本再通过
+`tools/verify_init_order.py` 检查最终 map 中的地址与优先级顺序。
 
 **Keil uVision 工程（并行构建，必须同时通过）**：目标固件改动除脚本构建外，还必须在
 `project/MDK-ARM/PFA_PSG.uvprojx` 中用命令构建并通过：

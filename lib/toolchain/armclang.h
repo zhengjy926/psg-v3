@@ -11,7 +11,7 @@
 #error Please do not include toolchain-specific headers directly, use <zephyr/toolchain.h> instead
 #endif
 
-#include <zephyr/toolchain/llvm.h>
+#include <toolchain/llvm.h>
 
 /*
  * To reuse as much as possible from the llvm.h header we only redefine the

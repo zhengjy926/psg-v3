@@ -16,7 +16,14 @@
 #ifndef APP_H_
 #define APP_H_
 
-void app_init();
+#include <logging/log.h>
+#include "../service/heartbeat/heartbeat.h"
+
+struct app_config {
+	struct heartbeat_config heartbeat;
+};
+
+int app_init(const struct app_config *cfg);
 void app_step(void);
 
 #endif /* PSG_APP_APP_H_ */

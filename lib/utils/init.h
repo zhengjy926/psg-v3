@@ -16,8 +16,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <zephyr/sys/util.h>
-#include <zephyr/toolchain.h>
+#include <util.h>
+#include <toolchain/toolchain.h>
 
 #ifdef __cplusplus
 extern "C" {

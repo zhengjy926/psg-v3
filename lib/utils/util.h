@@ -14,8 +14,8 @@
 #ifndef ZEPHYR_INCLUDE_SYS_UTIL_H_
 #define ZEPHYR_INCLUDE_SYS_UTIL_H_
 
-#include <zephyr/sys/util_macro.h>
-#include <zephyr/toolchain.h>
+#include <util_macro.h>
+#include <toolchain/toolchain.h>
 
 /* needs to be outside _ASMLANGUAGE so 'true' and 'false' can turn
  * into '1' and '0' for asm or linker scripts
@@ -24,8 +24,8 @@
 
 #ifndef _ASMLANGUAGE
 
-#include <zephyr/sys/__assert.h>
-#include <zephyr/types.h>
+#include <__assert.h>
+#include <types.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -1045,7 +1045,7 @@ static ALWAYS_INLINE uint64_t sys_lcm_s(int32_t a, int32_t b)
 /* This file must be included at the end of the !_ASMLANGUAGE guard.
  * It depends on macros defined in this file above which cannot be forward declared.
  */
-#include <zephyr/sys/time_units.h>
+#include <time_units.h>
 
 #endif /* !_ASMLANGUAGE */
 

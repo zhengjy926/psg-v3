@@ -15,8 +15,8 @@
 #ifndef ZEPHYR_INCLUDE_DRIVERS_INTERRUPT_CONTROLLER_GPIO_INTC_STM32_H_
 #define ZEPHYR_INCLUDE_DRIVERS_INTERRUPT_CONTROLLER_GPIO_INTC_STM32_H_
 
-#include <zephyr/types.h>
-#include <zephyr/drivers/gpio.h>
+#include <types.h>
+#include <gpio.h>
 
 /**
  * @brief Opaque type representing a GPIO interrupt line

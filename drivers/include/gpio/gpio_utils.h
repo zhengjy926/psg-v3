@@ -22,11 +22,10 @@
 #include <stdint.h>
 #include <errno.h>
 
-#include <zephyr/devicetree.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/sys/__assert.h>
-#include <zephyr/sys/slist.h>
-#include <zephyr/tracing/tracing.h>
+#include <gpio.h>
+#include <__assert.h>
+#include <slist.h>
+#include <tracing.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,49 +39,6 @@ extern "C" {
  */
 #define GPIO_PORT_PIN_MASK_FROM_NGPIOS(ngpios)			\
 	((gpio_port_pins_t)(((uint64_t)1 << (ngpios)) - 1U))
-
-/**
- * @brief Makes a bitmask of allowed GPIOs from the @p "gpio-reserved-ranges"
- *        and @p "ngpios" DT properties values
- *
- * @param node_id GPIO controller node identifier.
- * @return the bitmask of allowed gpios
- * @see GPIO_DT_PORT_PIN_MASK_NGPIOS_EXC()
- */
-#define GPIO_PORT_PIN_MASK_FROM_DT_NODE(node_id)		\
-	GPIO_DT_PORT_PIN_MASK_NGPIOS_EXC(node_id, DT_PROP(node_id, ngpios))
-
-/**
- * @brief Make a bitmask of allowed GPIOs from a @c DT_DRV_COMPAT instance's GPIO
- *        @p "gpio-reserved-ranges" and @p "ngpios" DT properties values
- *
- * @param inst @c DT_DRV_COMPAT instance number
- * @return the bitmask of allowed gpios
- * @see GPIO_DT_PORT_PIN_MASK_NGPIOS_EXC()
- */
-#define GPIO_PORT_PIN_MASK_FROM_DT_INST(inst)			\
-	GPIO_PORT_PIN_MASK_FROM_DT_NODE(DT_DRV_INST(inst))
-
-
-/**
- * @brief Make a struct gpio_driver_config initializer from a node identifier
- *
- * @param node_id GPIO controller node identifier.
- * @return a struct gpio_driver_config initializer
- */
-#define GPIO_COMMON_CONFIG_FROM_DT_NODE(node_id)                           \
-	{                                                                  \
-		.port_pin_mask = GPIO_PORT_PIN_MASK_FROM_DT_NODE(node_id), \
-	}
-
-/**
- * @brief Make a struct gpio_driver_config initializer from a @c DT_DRV_COMPAT instance number
- *
- * @param inst @c DT_DRV_COMPAT instance number
- * @return a struct gpio_driver_config initializer
- */
-#define GPIO_COMMON_CONFIG_FROM_DT_INST(inst)                   \
-	GPIO_COMMON_CONFIG_FROM_DT_NODE(DT_DRV_INST(inst))
 
 /**
  * @brief Generic function to insert or remove a callback from a callback list

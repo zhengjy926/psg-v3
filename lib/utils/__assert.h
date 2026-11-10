@@ -7,7 +7,7 @@
 #ifndef ZEPHYR_INCLUDE_SYS___ASSERT_H_
 #define ZEPHYR_INCLUDE_SYS___ASSERT_H_
 
-#include <zephyr/sys/zassert.h>
+#include <zassert.h>
 
 #if CONFIG_ASSERT_MODULE_DEFAULT_LEVEL > ZASSERT_LEVEL_OFF
 

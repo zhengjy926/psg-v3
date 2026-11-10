@@ -21,7 +21,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <zephyr/sys/atomic_types.h>
+#include <atomic_types.h>
 
 #ifdef __cplusplus
 extern "C" {

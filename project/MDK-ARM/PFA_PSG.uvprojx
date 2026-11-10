@@ -337,10 +337,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls></MiscControls>
+              <MiscControls>-imacros autoconf.h</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\app;..\..\drivers\include;..\..\drivers\gpio;..\..\drivers\include\gpio;..\..\drivers\include\clock_control;..\..\third_party\stm32\soc\stm32g4x;..\..\third_party\stm32\soc\common;..\..\third_party\stm32\common_ll\include;..\..\lib\utils;..\..\subsys\logging</IncludePath>
+              <IncludePath>..\..\vendored\zephyr\include;..\..;..\..\lib\libc\armstdc\include;..\..\lib;..\..\lib\utils;..\..\app;..\..\drivers\include;..\..\drivers\gpio;..\..\drivers\include\gpio;..\..\drivers\include\clock_control;..\..\third_party\stm32\soc\stm32g4x;..\..\third_party\stm32\soc\common;..\..\third_party\stm32\common_ll\include;..\..\third_party\stm32\cmsis-device-g4\Include;..\..\third_party\stm32\stm32g4xx-hal-driver\Inc;..\..\third_party\CMSIS_6\CMSIS\Core\Include;..\..\third_party\CMSIS_6\CMSIS\Core\Include\m-profile;..\..\subsys\logging;..\..\subsys\tracing\include;..\..\osal;..\..\subsys;..\..\lib\os</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -371,7 +371,7 @@
             <TextAddressRange>0x08000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile>..\board\stm32g474\stm32g474.sct</ScatterFile>
+            <ScatterFile>..\..\board\stm32g474.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -394,6 +394,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\app\app.c</FilePath>
             </File>
+            <File>
+              <FileName>autoconf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\app\autoconf.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -403,6 +408,11 @@
               <FileName>board.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\board\board.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32g4xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\cmsis-device-g4\Source\Templates\system_stm32g4xx.c</FilePath>
             </File>
             <File>
               <FileName>startup_stm32g474.s</FileName>
@@ -415,20 +425,101 @@
           <GroupName>drivers</GroupName>
           <Files>
             <File>
-              <FileName>gpio_stm32.c</FileName>
+              <FileName>led_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\drivers\gpio\gpio_stm32.c</FilePath>
+              <FilePath>..\..\drivers\led\led_gpio.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>osal</GroupName>
+          <Files>
+            <File>
+              <FileName>osal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\osal\osal.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>service</GroupName>
+          <Files>
+            <File>
+              <FileName>heartbeat.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\service\heartbeat\heartbeat.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>third_party/stm32g4xx</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32g4xx_ll_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_comp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_comp.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_dac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_dac.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_hrtim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_hrtim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_pwr.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32g4xx_ll_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\third_party\stm32\stm32g4xx-hal-driver\Src\stm32g4xx_ll_utils.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>third_party/cmsis</GroupName>
@@ -440,6 +531,11 @@
               <FileName>device.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\lib\utils\device.c</FilePath>
+            </File>
+            <File>
+              <FileName>init_runner.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\lib\utils\init_runner.c</FilePath>
             </File>
           </Files>
         </Group>

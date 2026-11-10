@@ -24,8 +24,8 @@
 
 #include <errno.h>
 
-#include <zephyr/types.h>
-#include <zephyr/device.h>
+#include <types.h>
+#include <device.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -177,6 +177,12 @@ static inline int z_impl_led_blink(const struct device *dev, uint32_t led,
 	return api->blink(dev, led, delay_on, delay_off);
 }
 
+static inline int led_blink(const struct device *dev, uint32_t led,
+			    uint32_t delay_on, uint32_t delay_off)
+{
+	return z_impl_led_blink(dev, led, delay_on, delay_off);
+}
+
 /**
  * @brief Get LED information
  *
@@ -200,6 +206,12 @@ static inline int z_impl_led_get_info(const struct device *dev, uint32_t led,
 		return -ENOSYS;
 	}
 	return api->get_info(dev, led, info);
+}
+
+static inline int led_get_info(const struct device *dev, uint32_t led,
+			       const struct led_info **info)
+{
+	return z_impl_led_get_info(dev, led, info);
 }
 
 /**
@@ -246,6 +258,12 @@ static inline int z_impl_led_set_brightness(const struct device *dev,
 	}
 
 	return api->set_brightness(dev, led, value);
+}
+
+static inline int led_set_brightness(const struct device *dev, uint32_t led,
+				    uint8_t value)
+{
+	return z_impl_led_set_brightness(dev, led, value);
 }
 
 /**
@@ -331,6 +349,12 @@ static inline int z_impl_led_set_color(const struct device *dev, uint32_t led,
 	return api->set_color(dev, led, num_colors, color);
 }
 
+static inline int led_set_color(const struct device *dev, uint32_t led,
+				uint8_t num_colors, const uint8_t *color)
+{
+	return z_impl_led_set_color(dev, led, num_colors, color);
+}
+
 /**
  * @brief Turn on an LED
  *
@@ -360,6 +384,11 @@ static inline int z_impl_led_on(const struct device *dev, uint32_t led)
 	return api->on(dev, led);
 }
 
+static inline int led_on(const struct device *dev, uint32_t led)
+{
+	return z_impl_led_on(dev, led);
+}
+
 /**
  * @brief Turn off an LED
  *
@@ -387,6 +416,11 @@ static inline int z_impl_led_off(const struct device *dev, uint32_t led)
 	}
 
 	return api->off(dev, led);
+}
+
+static inline int led_off(const struct device *dev, uint32_t led)
+{
+	return z_impl_led_off(dev, led);
 }
 
 /*
@@ -573,7 +607,5 @@ static inline bool led_is_ready_dt(const struct led_dt_spec *spec)
 #ifdef __cplusplus
 }
 #endif
-
-#include <zephyr/syscalls/led.h>
 
 #endif	/* ZEPHYR_INCLUDE_DRIVERS_LED_H_ */

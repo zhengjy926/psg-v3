@@ -32,10 +32,10 @@
 #include <errno.h>
 #include <stddef.h>
 
-#include <zephyr/types.h>
-#include <zephyr/device.h>
-#include <zephyr/sys/__assert.h>
-#include <zephyr/sys/slist.h>
+#include <types.h>
+#include <device.h>
+#include <__assert.h>
+#include <slist.h>
 
 #ifdef __cplusplus
 extern "C" {

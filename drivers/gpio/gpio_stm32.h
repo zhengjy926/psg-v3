@@ -10,10 +10,9 @@
 /**
  * @file header for STM32 GPIO
  */
-
-#include <zephyr/drivers/clock_control/stm32_clock_control.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/pinctrl.h>
+#include <clock_control/stm32_clock_control.h>
+#include <gpio.h>
+#include <pinctrl.h>
 
 #include <stm32_gpio_shared.h>
 

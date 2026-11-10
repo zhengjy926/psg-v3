@@ -28,7 +28,7 @@
 
 /** @cond INTERNAL_HIDDEN */
 
-#include <zephyr/drivers/clock_control.h>
+#include <clock_control.h>
 
 /* Retrieve the main system clock from DTS. */
 #define STM32_HCLK_FREQUENCY DT_PROP(DT_NODELABEL(rcc), clock_frequency)

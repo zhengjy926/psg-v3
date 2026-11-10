@@ -8,7 +8,7 @@
 #define ZEPHYR_LIB_LIBC_ARMSTDC_INCLUDE_STRING_H_
 
 #include <stddef.h>
-#include <zephyr/toolchain.h>
+#include <toolchain/toolchain.h>
 
 #include_next <string.h>
 

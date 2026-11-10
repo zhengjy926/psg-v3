@@ -12,8 +12,8 @@
 #ifndef ZEPHYR_INCLUDE_SYS_ERRNO_PRIVATE_H_
 #define ZEPHYR_INCLUDE_SYS_ERRNO_PRIVATE_H_
 
-#include <zephyr/toolchain.h>
-#include <zephyr/types.h> /* For Z_THREAD_LOCAL */
+#include <toolchain/toolchain.h>
+#include <types.h> /* For Z_THREAD_LOCAL */
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,9 +54,5 @@ __syscall int *z_errno(void);
 #ifdef __cplusplus
 }
 #endif
-
-#if !defined(CONFIG_ERRNO_IN_TLS) && !defined(CONFIG_LIBC_ERRNO)
-#include <zephyr/syscalls/errno_private.h>
-#endif /* CONFIG_ERRNO_IN_TLS */
 
 #endif /* ZEPHYR_INCLUDE_SYS_ERRNO_PRIVATE_H_ */

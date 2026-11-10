@@ -14,11 +14,18 @@
 #define ZEPHYR_INCLUDE_LOGGING_LOG_OUTPUT_H_
 
 #include <errno.h>
-#include <zephyr/logging/log_msg.h>
-#include <zephyr/sys/util.h>
+#include <logging/log_msg.h>
+#include <util.h>
 #include <stdarg.h>
-#include <zephyr/sys/atomic.h>
+#include <atomic.h>
+#ifdef CONFIG_NO_DT
+struct k_spinlock {
+	uint32_t reserved;
+};
+typedef void *k_tid_t;
+#else
 #include <zephyr/kernel.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

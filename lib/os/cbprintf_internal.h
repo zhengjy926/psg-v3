@@ -16,10 +16,9 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <zephyr/toolchain.h>
-#include <zephyr/sys/util.h>
-#include <zephyr/sys/__assert.h>
-#include <zephyr/arch/cpu.h>
+#include <toolchain/toolchain.h>
+#include <util.h>
+#include <__assert.h>
 
 /** @cond INTERNAL_HIDDEN */
 
@@ -70,7 +69,7 @@ static inline void z_cbprintf_wcpy(int *dst, int *src, size_t len)
 	}
 }
 
-#include <zephyr/sys/cbprintf_cxx.h>
+#include <cbprintf_cxx.h>
 
 #ifdef __cplusplus
 extern "C" {

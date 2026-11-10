@@ -13,14 +13,14 @@
 #ifndef ZEPHYR_INCLUDE_LOGGING_LOG_MSG_H_
 #define ZEPHYR_INCLUDE_LOGGING_LOG_MSG_H_
 
-#include <zephyr/logging/log_instance.h>
-#include <zephyr/sys/mpsc_packet.h>
-#include <zephyr/sys/cbprintf.h>
-#include <zephyr/sys/atomic.h>
-#include <zephyr/sys/iterable_sections.h>
-#include <zephyr/sys/util.h>
+#include <logging/log_instance.h>
+#include <mpsc_packet.h>
+#include <cbprintf.h>
+#include <atomic.h>
+#include <iterable_sections.h>
+#include <util.h>
 #include <string.h>
-#include <zephyr/toolchain.h>
+#include <toolchain/toolchain.h>
 
 #ifdef __GNUC__
 #ifndef alloca
@@ -891,8 +891,6 @@ static inline uint8_t *log_msg_get_package(struct log_msg *msg, size_t *len)
 /**
  * @}
  */
-
-#include <zephyr/syscalls/log_msg.h>
 
 #ifdef __cplusplus
 }

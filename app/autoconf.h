@@ -1,0 +1,12 @@
+#define CONFIG_ARM (1) /**< 目标为 ARM 架构 */
+#define CONFIG_LITTLE_ENDIAN (1) /**< 小端字节序 */
+#define CONFIG_NO_DT 1
+#define CONFIG_SOC_SERIES_STM32G4X 1
+#define CONFIG_GPIO_STM32 1
+#define CONFIG_ATOMIC_OPERATIONS_BUILTIN 1
+#define CONFIG_ERRNO 1
+#define CONFIG_ERRNO_IN_TLS 1
+
+#ifndef DT_HAS_COMPAT_STATUS_OKAY
+#define DT_HAS_COMPAT_STATUS_OKAY(compat) 0
+#endif

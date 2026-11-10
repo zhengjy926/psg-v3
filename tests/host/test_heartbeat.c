@@ -1,53 +1,72 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Verifies the heartbeat service drives the LED through the injected (fake)
- * gpio device: LED starts off, toggles on after one half-period, off after two.
+ * Verifies heartbeat timing through the LED device API seam.
  */
 
 #include "app/app.h"
-#include "drivers/api/gpio.h"
+#include "drivers/include/led.h"
 #include "osal/osal.h"
 
-#include <zephyr/device.h>
+#include <device.h>
+#include <errno.h>
+#include <stdint.h>
 
 #include "unity.h"
 
-#define LED_PIN 9U
+static uint8_t fake_led_brightness;
+
+static int fake_led_set_brightness(const struct device *dev, uint32_t led,
+				   uint8_t value)
+{
+	(void)dev;
+	if ((led != 0U) || (value > LED_BRIGHTNESS_MAX)) {
+		return -EINVAL;
+	}
+
+	fake_led_brightness = value;
+	return 0;
+}
+
+static DEVICE_API(led, fake_led_api) = {
+	.set_brightness = fake_led_set_brightness,
+};
+
+static struct device fake_led = {
+	.name = "fake-led",
+	.api = &fake_led_api,
+};
 
 static void tick_ms(int ms)
 {
-	int i;
-
-	for (i = 0; i < ms; i++) {
+	for (int i = 0; i < ms; ++i) {
 		osal_tick();
 	}
 }
 
 void test_heartbeat(void)
 {
-	const struct device *gpio = device_get_binding("gpio");
-	struct app_config cfg = {0};
+	struct app_config cfg = {
+		.heartbeat = {
+			.led = &fake_led,
+			.led_index = 0U,
+			.half_period_ms = 500U,
+		},
+	};
 
-	TEST_ASSERT_NOT_NULL(gpio);
+	fake_led_brightness = 0U;
+	TEST_ASSERT_EQUAL_INT(0, app_init(&cfg));
+	TEST_ASSERT_EQUAL_UINT8(0U, fake_led_brightness);
 
-	cfg.heartbeat.gpio = gpio;
-	cfg.heartbeat.led_pin = LED_PIN;
-	cfg.heartbeat.half_period_ms = 500U;
-	cfg.watchdog = NULL;
+	tick_ms(499);
+	app_step();
+	TEST_ASSERT_EQUAL_UINT8(0U, fake_led_brightness);
 
-	app_init(&cfg);
+	tick_ms(1);
+	app_step();
+	TEST_ASSERT_EQUAL_UINT8(LED_BRIGHTNESS_MAX, fake_led_brightness);
 
-	/* LED starts off (active-low -> pin high). */
-	TEST_ASSERT_EQUAL_INT(GPIO_HIGH, gpio_get(gpio, LED_PIN));
-
-	/* One half-period -> on. */
 	tick_ms(500);
 	app_step();
-	TEST_ASSERT_EQUAL_INT(GPIO_LOW, gpio_get(gpio, LED_PIN));
-
-	/* Second half-period -> off. */
-	tick_ms(500);
-	app_step();
-	TEST_ASSERT_EQUAL_INT(GPIO_HIGH, gpio_get(gpio, LED_PIN));
+	TEST_ASSERT_EQUAL_UINT8(0U, fake_led_brightness);
 }

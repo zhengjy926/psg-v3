@@ -95,7 +95,7 @@
 #define ZRESTRICT restrict
 #endif
 
-#include <zephyr/toolchain/common.h>
+#include <toolchain/common.h>
 #include <stdbool.h>
 
 #define ALIAS_OF(of) __attribute__((alias(#of)))

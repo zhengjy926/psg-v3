@@ -6,8 +6,8 @@
 
 #include "osal.h"
 
-#include <zephyr/init.h>
-#include <zephyr/logging/log.h>
+#include <init.h>
+#include <logging/log.h>
 
 LOG_MODULE_REGISTER(osal, LOG_LEVEL_INF);
 

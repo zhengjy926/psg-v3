@@ -13,11 +13,11 @@
 #ifndef ZEPHYR_INCLUDE_LOGGING_LOG_H_
 #define ZEPHYR_INCLUDE_LOGGING_LOG_H_
 
-#include <zephyr/logging/log_instance.h>
-#include <zephyr/logging/log_core.h>
-#include <zephyr/sys/iterable_sections.h>
-#include <zephyr/sys/atomic.h>
-#include <zephyr/sys/util_macro.h>
+#include <logging/log_instance.h>
+#include <logging/log_core.h>
+#include <iterable_sections.h>
+#include <atomic.h>
+#include <util_macro.h>
 
 #if defined(CONFIG_USERSPACE) && defined(CONFIG_LOG_ALWAYS_RUNTIME)
 #include <zephyr/app_memory/app_memdomain.h>

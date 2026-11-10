@@ -56,5 +56,5 @@ static int fake_gpio_init(const struct device *dev)
 	return 0;
 }
 
-DEVICE_DEFINE(gpio, "gpio", fake_gpio_init, NULL, NULL, NULL, PRE_KERNEL_1, 10,
+DEVICE_DEFINE(gpio, "gpio", fake_gpio_init, NULL, NULL, PRE_KERNEL_1, 10,
 	      &fake_gpio_api);

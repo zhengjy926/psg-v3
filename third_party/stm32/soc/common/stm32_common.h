@@ -7,8 +7,9 @@
 #ifndef ZEPHYR_SOC_ST_STM32_COMMON_STM32_COMMON_H_
 #define ZEPHYR_SOC_ST_STM32_COMMON_STM32_COMMON_H_
 
-#include <zephyr/kernel.h>
-#include <zephyr/toolchain.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <toolchain/toolchain.h>
 
 /**
  * @brief Performs the entry-in-poweroff sequence.
@@ -25,7 +26,7 @@
 FUNC_NORETURN void stm32_enter_poweroff(void);
 
 #if defined(CONFIG_STM32_WKUP_PINS)
-#include <zephyr/drivers/gpio.h>
+#include <gpio.h>
 
 /**
  * @brief Enable and configure the wake-up line associated to a GPIO pin.

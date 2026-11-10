@@ -12,6 +12,7 @@
 
 /* On-board LED (PB9), active-low (F-015). */
 #define BOARD_LED_PIN 9U
+#define BOARD_LED_DEVICE_NAME "board-led"
 /* Run indicator (PB5), high while running (F-014). */
 #define BOARD_RUN_PIN 5U
 

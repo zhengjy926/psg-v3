@@ -52,18 +52,18 @@
  */
 #include <toolchain/other.h>
 #elif defined(__XCC__)
-#include <zephyr/toolchain/xcc.h>
+#include <toolchain/xcc.h>
 #elif defined(__CCAC__)
-#include <zephyr/toolchain/mwdt.h>
+#include <toolchain/mwdt.h>
 #elif defined(__ARMCOMPILER_VERSION)
-#include <zephyr/toolchain/armclang.h>
+#include <toolchain/armclang.h>
 #elif defined(__IAR_SYSTEMS_ICC__)
-#include <zephyr/toolchain/iar.h>
+#include <toolchain/iar.h>
 #elif defined(__llvm__) ||                                                                         \
 	(defined(_LINKER) && (defined(__LLD_LINKER_CMD__) || defined(__ELD_LINKER_CMD__)))
-#include <zephyr/toolchain/llvm.h>
+#include <toolchain/llvm.h>
 #elif defined(__GNUC__) || (defined(_LINKER) && defined(__GCC_LINKER_CMD__))
-#include <zephyr/toolchain/gcc.h>
+#include <toolchain/gcc.h>
 #else
 #error "Invalid/unknown toolchain configuration"
 #endif

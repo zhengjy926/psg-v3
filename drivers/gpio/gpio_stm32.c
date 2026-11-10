@@ -14,11 +14,13 @@
 #include <soc.h>
 #include <stm32_bitops.h>
 #include <stm32_common.h>
+#include <stm32_ll_bus.h>
+#include <stm32_ll_exti.h>
 #include <stm32_ll_gpio.h>
 #include <gpio.h>
+#include <clock_control/stm32_clock_control.h>
 #include <util.h>
-#include <gpio_intc_stm32.h>
-#include <stm32-gpio.h>
+#include <interrupt_controller/gpio_intc_stm32.h>
 
 #include "stm32_hsem.h"
 #include "gpio_stm32.h"
@@ -27,6 +29,30 @@
 #include <logging/log.h>
 
 LOG_MODULE_REGISTER(stm32, CONFIG_GPIO_LOG_LEVEL);
+
+/**
+ * Configures a GPIO pin to power on the system after Poweroff.
+ * This flag is reserved to GPIO pins that are associated with wake-up pins
+ * in STM32 PWR devicetree node, through the property "wkup-gpios".
+ */
+#define STM32_GPIO_WKUP (1 << 8)
+
+/** @cond INTERNAL_HIDDEN */
+#define STM32_GPIO_SPEED_SHIFT 9
+#define STM32_GPIO_SPEED_MASK  0x3
+/** @endcond */
+
+/** Configure the GPIO pin output speed to be low */
+#define STM32_GPIO_LOW_SPEED (0x0 << STM32_GPIO_SPEED_SHIFT)
+
+/** Configure the GPIO pin output speed to be medium */
+#define STM32_GPIO_MEDIUM_SPEED (0x1 << STM32_GPIO_SPEED_SHIFT)
+
+/** Configure the GPIO pin output speed to be high */
+#define STM32_GPIO_HIGH_SPEED (0x2 << STM32_GPIO_SPEED_SHIFT)
+
+/** Configure the GPIO pin output speed to be very high */
+#define STM32_GPIO_VERY_HIGH_SPEED (0x3 << STM32_GPIO_SPEED_SHIFT)
 
 /**
  * @brief Common GPIO driver for STM32 MCUs.

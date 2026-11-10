@@ -4,87 +4,77 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#define DT_DRV_COMPAT gpio_leds
-
 /**
  * @file
- * @brief GPIO driven LEDs
+ * @brief Statically configured GPIO LED controller
  */
 
-#include <zephyr/drivers/led.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/device.h>
-#include <zephyr/kernel.h>
+#include <device.h>
+#include <errno.h>
+#include <init.h>
+#include <led.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stm32g4xx.h>
+#include <stm32_ll_bus.h>
+#include <stm32_ll_gpio.h>
 
-#include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(led_gpio, CONFIG_LED_LOG_LEVEL);
+#include "../../board/board.h"
 
 struct led_gpio_config {
-	size_t num_leds;
-	const struct gpio_dt_spec *led;
+	GPIO_TypeDef *port;
+	uint32_t pin;
+	uint32_t clock_enable;
+	bool active_low;
 };
 
-static int led_gpio_set_brightness(const struct device *dev, uint32_t led, uint8_t value)
+static int led_gpio_set_brightness(const struct device *dev, uint32_t led,
+				   uint8_t value)
 {
-
 	const struct led_gpio_config *config = dev->config;
-	const struct gpio_dt_spec *led_gpio;
+	bool on;
+	bool high;
 
-	if (led >= config->num_leds) {
+	if ((led != 0U) || (value > LED_BRIGHTNESS_MAX)) {
 		return -EINVAL;
 	}
 
-	led_gpio = &config->led[led];
+	on = value != 0U;
+	high = on != config->active_low;
+	if (high) {
+		LL_GPIO_SetOutputPin(config->port, config->pin);
+	} else {
+		LL_GPIO_ResetOutputPin(config->port, config->pin);
+	}
 
-	return gpio_pin_set_dt(led_gpio, value > 0);
+	return 0;
 }
 
 static int led_gpio_init(const struct device *dev)
 {
 	const struct led_gpio_config *config = dev->config;
-	int err = 0;
 
-	if (!config->num_leds) {
-		LOG_ERR("%s: no LEDs found (DT child nodes missing)", dev->name);
-		err = -ENODEV;
-	}
+	LL_AHB2_GRP1_EnableClock(config->clock_enable);
+	LL_GPIO_SetOutputPin(config->port, config->pin);
+	LL_GPIO_SetPinOutputType(config->port, config->pin,
+				 LL_GPIO_OUTPUT_PUSHPULL);
+	LL_GPIO_SetPinPull(config->port, config->pin, LL_GPIO_PULL_NO);
+	LL_GPIO_SetPinSpeed(config->port, config->pin, LL_GPIO_SPEED_FREQ_LOW);
+	LL_GPIO_SetPinMode(config->port, config->pin, LL_GPIO_MODE_OUTPUT);
 
-	for (size_t i = 0; (i < config->num_leds) && !err; i++) {
-		const struct gpio_dt_spec *led = &config->led[i];
-
-		if (device_is_ready(led->port)) {
-			err = gpio_pin_configure_dt(led, GPIO_OUTPUT_INACTIVE);
-
-			if (err) {
-				LOG_ERR("Cannot configure GPIO (err %d)", err);
-			}
-		} else {
-			LOG_ERR("%s: GPIO device not ready", dev->name);
-			err = -ENODEV;
-		}
-	}
-
-	return err;
+	return 0;
 }
 
 static DEVICE_API(led, led_gpio_api) = {
-	.set_brightness	= led_gpio_set_brightness,
+	.set_brightness = led_gpio_set_brightness,
 };
 
-#define LED_GPIO_DEVICE(i)					\
-								\
-static const struct gpio_dt_spec gpio_dt_spec_##i[] = {		\
-	DT_INST_FOREACH_CHILD_SEP_VARGS(i, GPIO_DT_SPEC_GET, (,), gpios) \
-};								\
-								\
-static const struct led_gpio_config led_gpio_config_##i = {	\
-	.num_leds	= ARRAY_SIZE(gpio_dt_spec_##i),	\
-	.led		= gpio_dt_spec_##i,			\
-};								\
-								\
-DEVICE_DT_INST_DEFINE(i, &led_gpio_init, NULL,			\
-		      NULL, &led_gpio_config_##i,		\
-		      POST_KERNEL, CONFIG_LED_INIT_PRIORITY,	\
-		      &led_gpio_api);
+static const struct led_gpio_config board_led_config = {
+	.port = GPIOB,
+	.pin = 1U << BOARD_LED_PIN,
+	.clock_enable = LL_AHB2_GRP1_PERIPH_GPIOB,
+	.active_low = true,
+};
 
-DT_INST_FOREACH_STATUS_OKAY(LED_GPIO_DEVICE)
+DEVICE_DEFINE(board_led, BOARD_LED_DEVICE_NAME, led_gpio_init, NULL,
+	      &board_led_config, POST_KERNEL, 5, &led_gpio_api);
