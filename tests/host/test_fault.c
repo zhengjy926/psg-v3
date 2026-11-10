@@ -6,7 +6,7 @@
 
 #include "service/fault/fault.h"
 
-#include <zephyr/sys/util.h>
+#include <util.h>
 
 #include "unity.h"
 

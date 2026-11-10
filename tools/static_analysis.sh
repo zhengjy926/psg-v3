@@ -12,13 +12,17 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="${1:-$ROOT/build/host}"
 CPPCHECK_ADDONS="${2:-/usr/share/cppcheck/addons}"
 
-# Host-clean sources under analysis (project code + vendored zephyr runtime).
+# Host-clean sources under analysis (project code + Zephyr runtime under lib/utils).
+# Mirrors the host test build in CMakeLists.txt; board/, drivers/<drv>/ are target-only.
 mapfile -t SOURCES < <(
-  find "$ROOT/osal" "$ROOT/service" "$ROOT/app" "$ROOT/drivers/api" \
-       "$ROOT/vendored/zephyr/src" -name '*.c' | sort
+  find "$ROOT/osal" "$ROOT/service" "$ROOT/app" "$ROOT/lib/utils" -name '*.c' | sort
 )
 
-INCLUDES=(-I "$ROOT/vendored/zephyr/include" -I "$ROOT")
+INCLUDES=(
+  -I "$ROOT/lib" -I "$ROOT/lib/utils" -I "$ROOT/lib/os" -I "$ROOT/lib/toolchain"
+  -I "$ROOT/lib/libc/armstdc/include"
+  -I "$ROOT/subsys" -I "$ROOT/drivers/include" -I "$ROOT"
+)
 
 echo "== clang-tidy =="
 clang-tidy -p "$BUILD_DIR" "${SOURCES[@]}" --quiet \

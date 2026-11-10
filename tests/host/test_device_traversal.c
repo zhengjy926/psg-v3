@@ -7,8 +7,8 @@
  * returns NULL), which is what sets fault word bit0.
  */
 
-#include <zephyr/device.h>
-#include <zephyr/init.h>
+#include <device.h>
+#include <init.h>
 
 #include "service/fault/fault.h"
 #include "unity.h"
@@ -38,16 +38,21 @@ static int dev_init_prio15(const struct device *dev)
 }
 
 /* Declared out of priority order in the source; the linker must sort them. */
-DEVICE_DEFINE(trav_a, "trav_a", dev_init_prio25, NULL, NULL, NULL,
+DEVICE_DEFINE(trav_a, "trav_a", dev_init_prio25, NULL, NULL,
 	      PRE_KERNEL_2, 25, NULL);
-DEVICE_DEFINE(trav_b, "trav_b", dev_init_prio5, NULL, NULL, NULL,
+DEVICE_DEFINE(trav_b, "trav_b", dev_init_prio5, NULL, NULL,
 	      PRE_KERNEL_2, 5, NULL);
-DEVICE_DEFINE(trav_c, "trav_c", dev_init_prio15, NULL, NULL, NULL,
+DEVICE_DEFINE(trav_c, "trav_c", dev_init_prio15, NULL, NULL,
 	      PRE_KERNEL_2, 15, NULL);
 
 void test_device_init_traversal(void)
 {
 	order_n = 0;
+	/* Devices were initialized by z_sys_init_run_all() at boot; reset them so
+	 * the level run re-runs their init and records the order. */
+	DEVICE_GET(trav_b)->state->initialized = false;
+	DEVICE_GET(trav_c)->state->initialized = false;
+	DEVICE_GET(trav_a)->state->initialized = false;
 	z_sys_init_run_level(Z_INIT_ORD_PRE_KERNEL_2);
 
 	TEST_ASSERT_EQUAL_INT(3, order_n);
@@ -73,14 +78,17 @@ static int dev_init_after(const struct device *dev)
 }
 
 /* PRE_KERNEL_1 on host: these two plus the fake gpio (which records nothing). */
-DEVICE_DEFINE(trav_fail, "trav_fail", dev_init_fail, NULL, NULL, NULL,
+DEVICE_DEFINE(trav_fail, "trav_fail", dev_init_fail, NULL, NULL,
 	      PRE_KERNEL_1, 1, NULL);
-DEVICE_DEFINE(trav_after, "trav_after", dev_init_after, NULL, NULL, NULL,
+DEVICE_DEFINE(trav_after, "trav_after", dev_init_after, NULL, NULL,
 	      PRE_KERNEL_1, 2, NULL);
 
 void test_device_init_continues_after_failure(void)
 {
 	order_n = 0;
+	/* Same: reset the boot-initialized devices before re-running the level. */
+	DEVICE_GET(trav_fail)->state->initialized = false;
+	DEVICE_GET(trav_after)->state->initialized = false;
 	z_sys_init_run_level(Z_INIT_ORD_PRE_KERNEL_1);
 
 	/* The failing device ran first, then the next device still ran. */

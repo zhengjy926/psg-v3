@@ -6,7 +6,7 @@
  * linker must place them (10, 20, 30) so they execute in that order.
  */
 
-#include <zephyr/init.h>
+#include <init.h>
 
 #include "unity.h"
 

@@ -1,26 +1,27 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Host console log backend: emits formatted log lines to stdout.
+ * Host console log backend. Minimal v4.5.0 log_backend_api implementation:
+ * drops messages (the host tests do not assert on log output). Kept so LOG_*
+ * calls link and the log_backend iterable section is populated.
  */
 
-#include <zephyr/logging/log_backend.h>
+#include <logging/log_backend.h>
 
-#include <stdio.h>
-
-static void host_output(const char *data, size_t length)
+static void process(const struct log_backend *const backend, union log_msg_generic *msg)
 {
-	(void)fwrite(data, 1, length, stdout);
-	(void)fflush(stdout);
+	(void)backend;
+	(void)msg;
 }
 
-static void host_init(void)
+static void panic(const struct log_backend *const backend)
 {
+	(void)backend;
 }
 
 static const struct log_backend_api host_console_api = {
-	.init = host_init,
-	.output = host_output,
+	.process = process,
+	.panic = panic,
 };
 
-LOG_BACKEND_DEFINE(console, &host_console_api);
+LOG_BACKEND_DEFINE(console, host_console_api, false);

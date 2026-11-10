@@ -37,26 +37,6 @@ extern "C" {
 /** @endcond */
 
 /**
- * @brief Type used to represent a "handle" for a device.
- *
- * Every @ref device has an associated handle. You can get a pointer to a
- * @ref device from its handle and vice versa, but the handle uses less space
- * than a pointer. The device.h API mainly uses handles to store lists of
- * multiple devices in a compact way.
- *
- * The extreme values and zero have special significance. Negative values
- * identify functionality that does not correspond to a Zephyr device, such as
- * the system clock or a SYS_INIT() function.
- *
- * @see device_handle_get()
- * @see device_from_handle()
- */
-typedef int16_t device_handle_t;
-
-/** @brief Flag value used to identify an unknown device. */
-#define DEVICE_HANDLE_NULL 0
-
-/**
  * @brief Expands to the name of a global device object.
  *
  * Return the full name of a device object symbol created by DEVICE_DEFINE(),
@@ -208,53 +188,6 @@ struct device {
 	/** Device flags */
 	device_flags_t flags;
 };
-
-/**
- * @brief Get the handle for a given device
- *
- * @param dev the device for which a handle is desired.
- *
- * @return the handle for the device, or DEVICE_HANDLE_NULL if the device does
- * not have an associated handle.
- */
-static inline device_handle_t device_handle_get(const struct device *dev)
-{
-	device_handle_t ret = DEVICE_HANDLE_NULL;
-	STRUCT_SECTION_START_EXTERN(device);
-
-	/* TODO: If/when devices can be constructed that are not part of the
-	 * fixed sequence we'll need another solution.
-	 */
-	if (dev != NULL) {
-		ret = 1 + (device_handle_t)(dev - STRUCT_SECTION_START(device));
-	}
-
-	return ret;
-}
-
-/**
- * @brief Get the device corresponding to a handle.
- *
- * @param dev_handle the device handle
- *
- * @return the device that has that handle, or a null pointer if @p dev_handle
- * does not identify a device.
- */
-static inline const struct device *
-device_from_handle(device_handle_t dev_handle)
-{
-	STRUCT_SECTION_START_EXTERN(device);
-	const struct device *dev = NULL;
-	size_t numdev;
-
-	STRUCT_SECTION_COUNT(device, &numdev);
-
-	if ((dev_handle > 0) && ((size_t)dev_handle <= numdev)) {
-		dev = &STRUCT_SECTION_START(device)[dev_handle - 1];
-	}
-
-	return dev;
-}
 
 /**
  * @brief Get a @ref device reference from its @ref device.name field.
@@ -488,7 +421,7 @@ int device_init(const struct device *dev);
 #define Z_DEVICE_INIT_ENTRY_DEFINE(dev_id, level, prio)                                           \
 	Z_DEVICE_CHECK_INIT_LEVEL(level)                                                           \
                                                                                                    \
-	static const Z_DECL_ALIGN(struct init_entry) __used __noasan Z_INIT_ENTRY_SECTION(         \
+	const Z_DECL_ALIGN(struct init_entry) __used __noasan Z_INIT_ENTRY_SECTION(              \
 		level, prio, 0)                                                                    \
 		Z_INIT_ENTRY_NAME(DEVICE_NAME_GET(dev_id)) = {                                     \
 			.init_fn = NULL,                                                           \

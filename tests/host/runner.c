@@ -4,7 +4,7 @@
  * Unity test runner: boots the (host) device model, then runs all tests.
  */
 
-#include <zephyr/init.h>
+#include <init.h>
 
 #include "unity.h"
 

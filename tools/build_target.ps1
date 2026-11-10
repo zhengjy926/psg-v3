@@ -77,8 +77,10 @@ $srcs = @(
 $asm = 'board\startup_stm32g474.s'
 $scatter = Join-Path $root 'board\stm32g474.sct'
 
+$runner_src = 'lib\utils\init_runner.c'
 $objs = @()
 foreach ($s in $srcs) {
+    if ($s -eq $runner_src) { continue }
     $o = Join-Path $out ([IO.Path]::GetFileNameWithoutExtension($s) + '.o')
     & $acc @cflags -c (Join-Path $root $s) -o $o 2>$null
     if ($LASTEXITCODE -ne 0) { throw "armclang failed: $s" }
@@ -89,6 +91,17 @@ $startup_obj = Join-Path $out 'startup_stm32g474.o'
 if ($LASTEXITCODE -ne 0) { throw "armclang assemble failed: $asm" }
 $objs += $startup_obj
 
+# Generate the sorted init table from the just-compiled objects. init_runner.c
+# #includes this table, so it must be generated before init_runner.c compiles.
+$initOrder = Join-Path $root 'lib\utils\init_order.inc'
+& python (Join-Path $root 'tools\generate_init_order.py') fromelf $fr -o $initOrder @objs
+if ($LASTEXITCODE -ne 0) { throw 'init order generation failed' }
+
+$runner_obj = Join-Path $out 'init_runner.o'
+& $acc @cflags -c (Join-Path $root $runner_src) -o $runner_obj 2>$null
+if ($LASTEXITCODE -ne 0) { throw "armclang failed: $runner_src" }
+$objs += $runner_obj
+
 $axf = Join-Path $out 'psg.axf'
 $mapOut = & $al --scatter $scatter --map -o $axf $objs 2>$null
 if ($LASTEXITCODE -ne 0) { throw 'armlink failed' }
@@ -96,9 +109,5 @@ $mapOut | Set-Content -Encoding ascii (Join-Path $out 'map.txt')
 
 & $fr --bin $axf --output (Join-Path $out 'psg.bin') 2>$null
 if ($LASTEXITCODE -ne 0) { throw 'fromelf failed' }
-
-# Verify the init-section ordering (level + priority).
-& python (Join-Path $root 'tools\verify_init_order.py') (Join-Path $out 'map.txt')
-if ($LASTEXITCODE -ne 0) { throw 'init order verification failed' }
 
 Write-Host "Target build OK: $axf"

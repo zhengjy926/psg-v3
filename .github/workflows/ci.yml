@@ -27,5 +27,12 @@ jobs:
       - name: Test
         run: ctest --test-dir build/host --output-on-failure
 
+      - name: Check generated init order table is up to date
+        run: |
+          python3 tools/generate_init_order.py readelf readelf \
+            -o /tmp/init_order_host.inc \
+            $(find build/host/CMakeFiles/host_tests.dir -name '*.o')
+          diff lib/utils/init_order_host.inc /tmp/init_order_host.inc
+
       - name: Static analysis (clang-tidy + cppcheck + MISRA)
         run: tools/static_analysis.sh build/host /usr/share/cppcheck/addons

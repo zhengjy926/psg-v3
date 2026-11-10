@@ -5,9 +5,9 @@
  * device and NULL for unknown names; device_is_ready() reflects init status.
  */
 
-#include <zephyr/device.h>
+#include <device.h>
 
-#include "drivers/api/gpio.h"
+#include "drivers/include/gpio.h"
 #include "unity.h"
 
 void test_device_model(void)

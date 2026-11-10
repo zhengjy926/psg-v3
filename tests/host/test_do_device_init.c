@@ -5,9 +5,13 @@
  * as positive init_res), errno clamping, and the no-init (already-ready) case.
  */
 
-#include <zephyr/device.h>
+#include <device.h>
 
 #include "unity.h"
+
+/* do_device_init is an internal routine (upstream: kernel/device.c); declare it
+ * locally like upstream kernel/init.c, not in device.h. */
+extern int do_device_init(const struct device *dev);
 
 static int init_ok(const struct device *dev)
 {

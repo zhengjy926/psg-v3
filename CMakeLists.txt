@@ -50,8 +50,8 @@ target_include_directories(host_tests PRIVATE
     lib/utils
     lib/os
     lib/toolchain
-    lib/libc/armstdc/include
     subsys
+    subsys/tracing/include
     drivers/include
     third_party/unity/src
     tests/host
@@ -62,6 +62,7 @@ target_compile_options(host_tests PRIVATE
     -Wall
     -Wextra
     -g
+    -imacros ${CMAKE_SOURCE_DIR}/tests/host/autoconf_host.h
 )
 
 target_link_options(host_tests PRIVATE

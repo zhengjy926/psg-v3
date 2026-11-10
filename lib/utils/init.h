@@ -176,11 +176,15 @@ struct init_entry {
  * @see SYS_INIT()
  */
 #define SYS_INIT_NAMED(name, init_fn_, level, prio)                                       \
-	static const Z_DECL_ALIGN(struct init_entry)                                      \
+	const Z_DECL_ALIGN(struct init_entry)                                           \
 		Z_INIT_ENTRY_SECTION(level, prio, 0) __used __noasan                      \
 		Z_INIT_ENTRY_NAME(name) = {.init_fn = (init_fn_), .dev = NULL}            \
 
 /** @} */
+
+/* Port-internal init runners (upstream Zephyr keeps these in kernel_internal.h). */
+void z_sys_init_run_all(void);
+void z_sys_init_run_level(uint8_t level);
 
 #ifdef __cplusplus
 }

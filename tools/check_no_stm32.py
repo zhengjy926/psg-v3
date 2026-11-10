@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Build-time hard constraint: the host-clean layers (osal, service, app and
-drivers/api) must not include STM32 or other MCU headers.
+the Zephyr port under lib/utils) must not include STM32 or other MCU headers.
 
 Scans the given paths for C/C++ sources and fails with a non-zero exit if any
 of them includes an STM32/board device header. Wired into the host build as a

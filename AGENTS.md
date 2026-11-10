@@ -12,6 +12,15 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 
 Single-context: one root `GLOSSARY.md` and `docs/adr/`. See `docs/agents/domain.md`.
 
+### Zephyr upstream source
+
+复用外设驱动时优先复用 Zephyr 上游驱动，不重复造轮子。上游 Zephyr 检出在
+`D:\Zephyr\zephyrproject\zephyr`（west 工作区根为 `D:\Zephyr\zephyrproject`）。
+移植或适配某个驱动前，先读该驱动的上游源码（例如
+`D:\Zephyr\zephyrproject\zephyr\drivers\interrupt_controller\intc_gpio_stm32.c`、
+`D:\Zephyr\zephyrproject\zephyr\drivers\gpio\gpio_stm32.c`），判断能否原样复用或最小改动，
+而不是另写平行实现。仓库内 `drivers/` 是移植副本，可能已偏离上游；对照时以上游为准。
+
 ### Research reports
 
 Research reports are committed to `main` under `docs/research/`.

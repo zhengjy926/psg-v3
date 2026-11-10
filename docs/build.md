@@ -4,7 +4,7 @@
 
 | 工程 | 工具链 | 产出 | 验证 |
 | --- | --- | --- | --- |
-| 目标固件 | armclang AC6 (Keil MDK) + armlink + scatter | `build/target/psg.axf` / `psg.bin` | 编译通过 + init 段按 level+prio 排序 |
+| 目标固件 | armclang AC6 (Keil MDK) + armlink + scatter | `build/target/psg.axf` / `psg.bin` | 编译通过 + 生成 init 排序表 |
 | 主机测试 | Linux + GCC + Unity + ASan/UBSan | `build/host/host_tests` | 单测通过 + service/app/osal 不含 STM32 头（构建期强制） |
 
 ## 环境要求
@@ -16,10 +16,10 @@
 ## 目录
 
 ```
-vendored/zephyr/   移植 Zephyr v4.5.0 设备模型 + init API + 日志最小闭包（Apache-2.0）
-vendored/unity/    Unity 测试框架（MIT）
-board/             目标板支持（STM32G474：startup/scatter/system/组合根，可含 STM32 头）
-drivers/api/       驱动 ops 接口（主机清洁接缝，禁含 STM32 头）
+lib/  subsys/      移植 Zephyr v4.5.0 设备模型 + init + 日志最小闭包（Apache-2.0）
+third_party/unity/ Unity 测试框架（MIT）
+board/             目标板支持（STM32G474：startup/scatter/board init，可含 STM32 头）
+drivers/include/   驱动 ops 接口（Zephyr 公开 API 头，主机清洁接缝，禁含 STM32 头）
 drivers/<drv>/     目标驱动（含 STM32 头）
 osal/  service/  app/   主机清洁层（禁含 STM32 头）
 tests/host/        主机单测 + fake 驱动（第二 adapter）
@@ -36,11 +36,12 @@ powershell -File tools\build_target.ps1
 `tools/verify_init_order.py` 校验 init 段按 (level, prio) 单调排序。默认工具链
 `D:\Keil_v5\ARM\ARMCLANG\bin`，可用 `$env:ARMCLANG_BIN` 覆盖。
 
-**scatter 排序契约**：init level 按 execution region 顺序执行；当前目标固件
-保留的 POST_KERNEL 优先级为 1、5、10，各自使用独立 region。armlink 不保证按
-init section 名称排序，因此新增或调整优先级时，必须同步更新
-`board/stm32g474.sct` 和 `lib/utils/init_runner.c`；构建脚本再通过
-`tools/verify_init_order.py` 检查最终 map 中的地址与优先级顺序。
+**init 排序契约**：init 顺序由构建期生成的排序表驱动，不依赖链接器排序。
+`tools/generate_init_order.py` 从 `.o` 提取 `__init_*` 符号与段名里的
+(level, prio, sub)，按数字排序后生成 `lib/utils/init_order.inc`；`init_runner.c`
+遍历该表。scatter 只把 `.z_init_*` 全部 KEEP 进单个 `ER_INIT` region。
+新增/调整 `SYS_INIT`/`DEVICE_DEFINE` 时无需改 scatter——重跑 `build_target.ps1`
+即重生成排序表，并把更新的 `init_order.inc` 提交（Keil 编译的是入库这份）。
 
 **Keil uVision 工程（并行构建，必须同时通过）**：目标固件改动除脚本构建外，还必须在
 `project/MDK-ARM/PFA_PSG.uvprojx` 中用命令构建并通过：
@@ -60,9 +61,14 @@ cmake --build build/host      # 同时跑 check_no_stm32 硬约束
 ctest --test-dir build/host --output-on-failure
 ```
 
-`check_no_stm32` 在每次构建时扫描 `osal/ service/ app/ drivers/api/`，含 STM32 头
+`check_no_stm32` 在每次构建时扫描 `osal/ service/ app/ lib/utils/`，含 STM32 头
 即构建失败（硬约束）。ASan/UBSan 默认开启，`-DENABLE_SANITIZERS=OFF` 可关
 （见上方「环境要求」：主机测试须在 Linux/WSL 下构建）。
+
+host 侧用 `tests/host/autoconf_host.h`（`-imacros` 注入，定义 `CONFIG_X86` 等
+host 专属 CONFIG），并消费入库的 `lib/utils/init_order_host.inc`。该文件由
+`tools/generate_init_order.py readelf ...` 生成；CI 有一步重生成 + diff，改动
+host 的 `SYS_INIT`/`DEVICE_DEFINE` 后须在 Linux/WSL 重生成该文件并提交。
 
 ## 静态检查（clang-tidy + cppcheck + MISRA）
 
@@ -77,6 +83,6 @@ tools/static_analysis.sh build/host /usr/share/cppcheck/addons
 
 ## 关键验收对照
 
-- AC#1 目标固件**双构建**：`build_target.ps1`（脚本 / CI）**且** Keil uVision 工程 `project/MDK-ARM/PFA_PSG.uvprojx` 的 `UV4 -r` 均 `0 Error(s)`；scatter 排序由 `verify_init_order.py` 校验。
+- AC#1 目标固件**双构建**：`build_target.ps1`（脚本 / CI）**且** Keil uVision 工程 `project/MDK-ARM/PFA_PSG.uvprojx` 的 `UV4 -r` 均 `0 Error(s)`；init 排序表由 `generate_init_order.py` 生成。
 - AC#2 主机工程编译 + 无 STM32 头 → CMake 主机构建 + `check_no_stm32`。
 - AC#3 clang-tidy + cppcheck(MISRA) → `static_analysis.sh` + `.github/workflows/ci.yml`。
